@@ -464,9 +464,6 @@ tr:hover td{background:rgba(99,102,241,.04)}
       </template>
     </nav>
     <div class="p-3 border-t border-slate-800 space-y-1.5">
-      <template x-if="canAccess('settings')">
-        <button @click="exportBackup()" class="btn btn-ghost w-full text-xs" style="min-height:36px">Backup Data</button>
-      </template>
       <button @click="logout()" class="btn btn-ghost w-full text-xs" style="min-height:36px;color:#f87171;border-color:rgba(239,68,68,.25)">Sign Out</button>
     </div>
   </aside>
@@ -2112,6 +2109,8 @@ tr:hover td{background:rgba(99,102,241,.04)}
           <button @click="exportBackup()" class="btn btn-ghost w-full">💾 Export Full Backup (JSON)</button>
           <div><label class="block text-xs text-slate-400 mb-1.5">Restore from backup</label><input type="file" accept=".json" @change="importBackup($event)" class="fi text-xs"/></div>
           <button @click="if(confirm('DANGER: Delete ALL data?'))clearAllData()" class="btn btn-danger w-full">🗑️ Clear All Data</button>
+          <div class="pt-2"></div>
+          <button @click="logout()" class="btn btn-ghost w-full" style="color:#f87171;border-color:rgba(239,68,68,.25)">Sign Out</button>
         </div>
       </div>
       <div class="card">
@@ -2387,6 +2386,7 @@ tr:hover td{background:rgba(99,102,241,.04)}
       <div><label class="block text-xs text-slate-400 mb-1.5">Phone</label><input x-model="cf.phone" class="fi" placeholder="077-xxx-xxxx"/></div>
       <div><label class="block text-xs text-slate-400 mb-1.5">Route</label><select x-model="cf.routeId" class="fi"><option value="A">Route A</option><option value="B">Route B</option><option value="C">Route C</option></select></div>
       <div><label class="block text-xs text-slate-400 mb-1.5">Credit Limit (Rs.)</label><input type="number" x-model.number="cf.creditLimit" class="fi"/></div>
+      <div><label class="block text-xs text-slate-400 mb-1.5">Current Debt (Rs.)</label><input type="number" x-model.number="cf.outstanding" class="fi" placeholder="0"/></div>
       <div class="col-span-2"><label class="block text-xs text-slate-400 mb-1.5">Address</label><input x-model="cf.address" class="fi" placeholder="e.g. Colombo 5"/></div>
       <div class="col-span-2"><label class="block text-xs text-slate-400 mb-1.5">Notes</label><textarea x-model="cf.notes" class="fi" rows="2" placeholder="Optional..."></textarea></div>
     </div>
@@ -3136,16 +3136,16 @@ function app(){
     // ── ROLE PERMISSIONS ──
     rolePages:{
       // FIX: dashboard visible to Owner & Accountant only
-      'Owner':          ['dashboard','salesummary','dispatch','dispatch_requests','billing','returns','products','warehouse','customers','debts','cheques','payments','reports','users','settings','salary','dailysales'],
-      'Super Admin':    ['salesummary','dispatch','dispatch_requests','billing','returns','products','warehouse','customers','debts','cheques','payments','reports','users','settings','dailysales'],
+      'Owner':          ['dashboard','salesummary','dispatch','dispatch_requests','billing','returns','products','warehouse','customers','debts','cheques','payments','reports','settings','salary','dailysales'],
+      'Super Admin':    ['dashboard','salesummary','dispatch','dispatch_requests','billing','returns','products','warehouse','customers','debts','cheques','payments','reports','users','settings','salary','dailysales'],
       'Warehouse':      ['dispatch','dispatch_requests','billing','returns','warehouse'],
-      'Route Supervisor':['salesummary','dispatch','billing','returns','customers','debts'],
-      'Salesman':       ['salesummary','dispatch','billing','returns','customers','debts'],
-      'Accountant':     ['dashboard','dispatch','dispatch_requests','billing','returns','customers','debts','cheques','payments','reports','warehouse','dailysales'],
+      'Route Supervisor':['dispatch','billing','returns','customers','debts'],
+      'Salesman':       ['dispatch','billing','returns','customers','debts'],
+      'Accountant':     ['dashboard','products','dispatch','dispatch_requests','billing','returns','customers','debts','cheques','payments','reports','warehouse','dailysales'],
       'Auditor':        ['reports','debts','cheques'],
-      'Route A':        ['dispatch','billing','returns','customers','debts'],
-      'Route B':        ['dispatch','billing','returns','customers','debts'],
-      'Route C':        ['dispatch','billing','returns','customers','debts'],
+      'Route A':        ['salesummary','dispatch','billing','returns','customers','debts'],
+      'Route B':        ['salesummary','dispatch','billing','returns','customers','debts'],
+      'Route C':        ['salesummary','dispatch','billing','returns','customers','debts'],
     },
     allNavItems:[
       {sec:'Overview',    page:'dashboard',   icon:'📊', label:'Dashboard'},
