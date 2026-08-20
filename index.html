@@ -568,7 +568,7 @@ tr:hover td{background:rgba(99,102,241,.04)}
 
               <!-- Footer -->
               <div class="px-3 py-2 border-t border-slate-800 flex items-center justify-between">
-                <span class="text-xs text-slate-600">🌐 MillPro Live Presence</span>
+                <span class="text-xs text-slate-600">🌐 UniPOS Live Presence</span>
                 <span class="text-xs font-semibold text-emerald-400">● Active</span>
               </div>
             </div>
@@ -2938,7 +2938,7 @@ tr:hover td{background:rgba(99,102,241,.04)}
       ⚠️ Run this ONCE in your Supabase project → SQL Editor → New Query. This is required for realtime sync to work.
     </div>
     <div class="relative">
-      <pre id="sqlSetupCode" class="text-xs rounded-xl p-3 overflow-auto" style="background:#080e1a;border:1px solid #1e293b;color:#34d399;max-height:340px;white-space:pre">-- MillPro ERP - Supabase Full Setup SQL (v25)
+      <pre id="sqlSetupCode" class="text-xs rounded-xl p-3 overflow-auto" style="background:#080e1a;border:1px solid #1e293b;color:#34d399;max-height:340px;white-space:pre">-- UniPOS ERP - Supabase Full Setup SQL (v25)
 -- Run this ONCE in: Supabase Dashboard → SQL Editor → New Query → Run
 -- Safe to run again at any time - will not delete existing invoice/customer data.
 -- ================================================
@@ -3106,7 +3106,7 @@ SELECT tablename FROM pg_publication_tables WHERE pubname='supabase_realtime';
 <!-- ==================== JAVASCRIPT ==================== -->
 <script>
 // ══════════════════════════════════════════════════════════════════
-//  MillPro ERP - Supabase Edition
+//  UniPOS ERP - Supabase Edition
 //  ► Fill in your Supabase credentials below
 // ══════════════════════════════════════════════════════════════════
 const SUPABASE_URL  = 'https://tyxxmmabafptwoqqggxf.supabase.co';        // e.g. https://xxxx.supabase.co
@@ -3199,11 +3199,11 @@ function app(){
 
     // ── Stats & Debugging ───────────────────────────────────────────
     _rtEventCount:0,      // Total realtime events received this session
-    _rtVerbose:false,     // Toggle verbose logging via window.MillProRT.debug()
+    _rtVerbose:false,     // Toggle verbose logging via window.UniPOSRT.debug()
 
     // ── Subscription Registry ────────────────────────────────────────
     // Per-table subscription stats: {subscribed, lastEvt, lastTs, count}
-    // Inspect via: window.MillProRT.registry()
+    // Inspect via: window.UniPOSRT.registry()
     _rtSubRegistry:{},
 
     // ── Performance: UI Debounce Timers ─────────────────────────────
@@ -3334,7 +3334,7 @@ function app(){
             else this._pendingDailyReset=true;
           }
           if(this.loggedIn && !this._rtConnected && !this._rtReconnectTimer){
-            console.log('[MillPro RT] Tab visibility restored - scheduling reconnect');
+            console.log('[UniPOS RT] Tab visibility restored - scheduling reconnect');
             this._scheduleReconnect();
           }
         }
@@ -3344,12 +3344,12 @@ function app(){
       // Re-subscribe immediately when network comes back.
       window.addEventListener('online',()=>{
         if(this.loggedIn && !this._rtConnected){
-          console.log('[MillPro RT] Network came online - reconnecting');
+          console.log('[UniPOS RT] Network came online - reconnecting');
           this.setupRealtime();
         }
       });
       window.addEventListener('offline',()=>{
-        console.warn('[MillPro RT] Network went offline');
+        console.warn('[UniPOS RT] Network went offline');
         this._rtConnected=false;
         this.rtStatusLabel='Offline';
       });
@@ -3363,7 +3363,7 @@ function app(){
           this.todayISO=newDate;
           const nd=new Date();
           this.today=nd.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
-          console.log('[MillPro v29] Date changed to',newDate,'- running daily reset');
+          console.log('[UniPOS v29] Date changed to',newDate,'- running daily reset');
           if(this.loggedIn) this._doDispatchReset('Automatic Reset').then(()=>this.initDispatch());
           else this._pendingDailyReset=true;
         }
@@ -3434,7 +3434,7 @@ function app(){
             this.page=restoredAllowed[0]||'billing';
           }
           const pageTitleMap={dashboard:'Executive Dashboard',salesummary:'My Sales Summary',dispatch:'Morning Dispatch',dispatch_requests:'Pending Dispatch Requests',billing:'Billing / Invoices',returns:'Returns Management',products:'Products & SKUs',warehouse:'Warehouse Stock',customers:'Customers / Shops',debts:'Debt Ledger',cheques:'Cheque Management',payments:'Payments',reports:'Reports & Export',users:'Users',settings:'Settings',salary:'Salary Management',dailysales:'Daily Sales'};
-          this.pageTitle=pageTitleMap[this.page]||'MillPro ERP';
+          this.pageTitle=pageTitleMap[this.page]||'UniPOS ERP';
           this.$nextTick(()=>{
             setTimeout(()=>this.renderCharts(),250);
             this.setupRealtime();
@@ -3459,7 +3459,7 @@ function app(){
         console.error('Load error',table,error);
         // Detect wrong schema (missing 'data' column) and flag it visibly
         if(error.message&&(error.message.includes('schema cache')||error.message.includes("'data' column")||error.message.includes('does not exist'))){
-          console.warn('[MillPro] ❌ Table "'+table+'" has wrong schema. Go to Settings → Run Supabase Setup SQL to fix.');
+          console.warn('[UniPOS] ❌ Table "'+table+'" has wrong schema. Go to Settings → Run Supabase Setup SQL to fix.');
           // Show a one-time toast if logged in
           if(this.loggedIn) this._queueToast('🛠️ Table "'+table+'" needs updating - run Setup SQL in Settings','red');
         }
@@ -3477,7 +3477,7 @@ function app(){
       setTimeout(()=>{ delete this._pendingLocalIds[dedupKey]; },8000);
       const {error}=await sb.from(table).upsert({id:item.id,data:item},{onConflict:'id'});
       if(error){console.error('Upsert error',table,error);delete this._pendingLocalIds[dedupKey];}
-      else { console.log('[MillPro DB] ✅ Upsert OK:',table,item.id); }
+      else { console.log('[UniPOS DB] ✅ Upsert OK:',table,item.id); }
     },
     async sbDelete(table,id){
       // Mark delete as locally-initiated to avoid duplicate processing
@@ -3486,7 +3486,7 @@ function app(){
       setTimeout(()=>{ delete this._pendingLocalIds[dedupKey]; },8000);
       const {error}=await sb.from(table).delete().eq('id',id);
       if(error){console.error('Delete error',table,id,error);delete this._pendingLocalIds[dedupKey];}
-      else { console.log('[MillPro DB] ✅ Delete OK:',table,id); }
+      else { console.log('[UniPOS DB] ✅ Delete OK:',table,id); }
     },
 
     // ══════════════════════════════════════════════════════════════
@@ -3511,7 +3511,7 @@ function app(){
       else if(role==='Route C'){this.invF.routeId='C';this.activeDispTab='C';}
       const allowed=this.rolePages[role]||[];
       if(!allowed.includes(this.page)) this.page=allowed[0]||'billing';
-      this.pageTitle=({dashboard:'Executive Dashboard',salesummary:'My Sales Summary',dispatch:'Morning Dispatch',dispatch_requests:'Pending Dispatch Requests',billing:'Billing / Invoices',returns:'Returns Management',products:'Products & SKUs',warehouse:'Warehouse Stock',customers:'Customers / Shops',debts:'Debt Ledger',cheques:'Cheque Management',payments:'Payments',reports:'Reports & Export',users:'Users',settings:'Settings',salary:'Salary Management',dailysales:'Daily Sales'})[this.page]||'MillPro ERP';
+      this.pageTitle=({dashboard:'Executive Dashboard',salesummary:'My Sales Summary',dispatch:'Morning Dispatch',dispatch_requests:'Pending Dispatch Requests',billing:'Billing / Invoices',returns:'Returns Management',products:'Products & SKUs',warehouse:'Warehouse Stock',customers:'Customers / Shops',debts:'Debt Ledger',cheques:'Cheque Management',payments:'Payments',reports:'Reports & Export',users:'Users',settings:'Settings',salary:'Salary Management',dailysales:'Daily Sales'})[this.page]||'UniPOS ERP';
       this.$nextTick(()=>{ setTimeout(()=>this.renderCharts(),200); this.setupRealtime(); this.setupPresence(); });
       // ── NEW: Run daily reset check after login ──
       if(this._pendingDailyReset){ this._pendingDailyReset=false; this._doDispatchReset('Automatic Reset'); }
@@ -3538,7 +3538,7 @@ function app(){
       if(!this.canAccess(p)){return;}
       this.page=p; this.sidebarOpen=false;
       const t={dashboard:'Executive Dashboard',salesummary:'My Sales Summary',dispatch:'Morning Dispatch',dispatch_requests:'Pending Dispatch Requests',billing:'Billing / Invoices',returns:'Returns Management',products:'Products & SKUs',warehouse:'Warehouse Stock',customers:'Customers / Shops',debts:'Debt Ledger',cheques:'Cheque Management',payments:'Payments',reports:'Reports & Export',users:'Users',settings:'Settings',salary:'Salary Management',dailysales:'Daily Sales'};
-      this.pageTitle=t[p]||'MillPro ERP';
+      this.pageTitle=t[p]||'UniPOS ERP';
       if(p==='dashboard')this.$nextTick(()=>setTimeout(()=>this.renderCharts(),120));
       if(p==='dispatch')this.$nextTick(()=>this.initDispatch());
       if(p==='dailysales'&&!this.dsDateFrom){this.dsDateFrom=this.todayISO;this.dsDateTo=this.todayISO;}
@@ -4117,7 +4117,7 @@ function app(){
       if((pa.cheque||0)>0) payLines.push('Cheque: Rs.'+Math.round(pa.cheque).toLocaleString());
       if((pa.credit||0)>0) payLines.push('Credit: Rs.'+Math.round(pa.credit).toLocaleString());
       const payStr=payLines.length?payLines.join(' | '):'To be allocated';
-      const html=`<html><head><style>body{font-family:monospace;font-size:12px;width:340px;margin:0 auto;padding:10px}h2,p{text-align:center;margin:3px 0}table{width:100%;border-collapse:collapse}td{padding:3px 4px;border-bottom:1px dotted #ccc}hr{border:1px dashed #000}.tot{font-weight:bold;font-size:14px}.disc{color:#059669;font-size:11px}</style></head><body><h2>${this.settings.businessName||'MillPro ERP'}</h2><p>Invoice: <b>${this.nextInvNumber}</b></p><p>${this.invF.date} · Route ${this.invF.routeId}</p><p>Customer: ${c.shopName||'-'}</p><hr/><table><tr><td><b>Product</b></td><td><b>Qty</b></td><td><b>Unit</b></td><td><b>Disc</b></td><td><b>Net</b></td><td><b>Total</b></td></tr>${rows}</table><hr/><p>Gross: Rs.${Math.round(this.invSubtotal).toLocaleString()}</p>${this.invItemDiscTotal>0?'<p class=disc>Product Discounts: -Rs.'+Math.round(this.invItemDiscTotal).toLocaleString()+'</p>':''} ${this.invDiscount>0?'<p class=disc>Invoice Discount: -Rs.'+Math.round(this.invDiscount).toLocaleString()+'</p>':''} ${this.invTotalDiscounts>0?'<p class=disc>Total Savings: Rs.'+Math.round(this.invTotalDiscounts).toLocaleString()+'</p>':''}<p class="tot">TOTAL: Rs.${Math.round(this.invTotal).toLocaleString()}</p><p>Payment: ${payStr}</p><hr/><p>Thank you!</p></body></html>`;
+      const html=`<html><head><style>body{font-family:monospace;font-size:12px;width:340px;margin:0 auto;padding:10px}h2,p{text-align:center;margin:3px 0}table{width:100%;border-collapse:collapse}td{padding:3px 4px;border-bottom:1px dotted #ccc}hr{border:1px dashed #000}.tot{font-weight:bold;font-size:14px}.disc{color:#059669;font-size:11px}</style></head><body><h2>${this.settings.businessName||'UniPOS ERP'}</h2><p>Invoice: <b>${this.nextInvNumber}</b></p><p>${this.invF.date} · Route ${this.invF.routeId}</p><p>Customer: ${c.shopName||'-'}</p><hr/><table><tr><td><b>Product</b></td><td><b>Qty</b></td><td><b>Unit</b></td><td><b>Disc</b></td><td><b>Net</b></td><td><b>Total</b></td></tr>${rows}</table><hr/><p>Gross: Rs.${Math.round(this.invSubtotal).toLocaleString()}</p>${this.invItemDiscTotal>0?'<p class=disc>Product Discounts: -Rs.'+Math.round(this.invItemDiscTotal).toLocaleString()+'</p>':''} ${this.invDiscount>0?'<p class=disc>Invoice Discount: -Rs.'+Math.round(this.invDiscount).toLocaleString()+'</p>':''} ${this.invTotalDiscounts>0?'<p class=disc>Total Savings: Rs.'+Math.round(this.invTotalDiscounts).toLocaleString()+'</p>':''}<p class="tot">TOTAL: Rs.${Math.round(this.invTotal).toLocaleString()}</p><p>Payment: ${payStr}</p><hr/><p>Thank you!</p></body></html>`;
       const w=window.open('','_blank','width=350,height=520');w.document.write(html);w.document.close();w.print();
     },
     exportInvoicesCSV(){
@@ -4195,9 +4195,9 @@ function app(){
       else this.dispatches.push({...d});
       try{
         await this.sbUpsert('dispatches',d);
-        console.log('[MillPro Dispatch] Load/notes saved for Route',routeId);
+        console.log('[UniPOS Dispatch] Load/notes saved for Route',routeId);
       }catch(e){
-        console.warn('[MillPro Dispatch] Save failed:',e);
+        console.warn('[UniPOS Dispatch] Save failed:',e);
       }
     },
     async approveDispatch(routeId){
@@ -4301,10 +4301,10 @@ function app(){
       return req.items.some(i=>{ const load=parseInt(i.load)||0; return load>0&&load>this.getStock(i.productId); });
     },
     async loadDispatchRequests(){
-      console.log('[MillPro DR] 🔄 Loading dispatch requests from DB...');
+      console.log('[UniPOS DR] 🔄 Loading dispatch requests from DB...');
       try{
         const fresh=await this.sbLoad('dispatch_requests');
-        console.log('[MillPro DR] Loaded',fresh.length,'dispatch requests from DB');
+        console.log('[UniPOS DR] Loaded',fresh.length,'dispatch requests from DB');
         // DB is always the authoritative source of truth.
         // Always replace - realtime handles deltas after this baseline.
         // Only keep stale RT data if the DB call returns a genuine empty set AND
@@ -4316,11 +4316,11 @@ function app(){
         } else {
           // DB returned zero rows but we have RT data - could be RLS / replication lag
           // Keep existing data and log a warning
-          console.warn('[MillPro DR] ⚠️ DB returned 0 rows but have',this.dispatchRequests.length,'RT items - keeping RT data');
-          console.warn('[MillPro DR] If requests keep disappearing, run supabase_realtime_setup.sql in Supabase SQL Editor');
+          console.warn('[UniPOS DR] ⚠️ DB returned 0 rows but have',this.dispatchRequests.length,'RT items - keeping RT data');
+          console.warn('[UniPOS DR] If requests keep disappearing, run supabase_realtime_setup.sql in Supabase SQL Editor');
         }
       }catch(e){
-        console.error('[MillPro DR] Load error:',e);
+        console.error('[UniPOS DR] Load error:',e);
       }
     },
 
@@ -4361,7 +4361,7 @@ function app(){
         .upsert({id:req.id,data:req},{onConflict:'id'});
 
       if(drErr){
-        console.error('[MillPro DR] ❌ Save failed:',drErr);
+        console.error('[UniPOS DR] ❌ Save failed:',drErr);
         // Roll back local push so driver doesn't see a phantom pending state
         this.dispatchRequests=this.dispatchRequests.filter(r=>r.id!==req.id);
         // Detect the specific "wrong schema" error and give a direct fix instruction
@@ -4384,7 +4384,7 @@ function app(){
         return;
       }
 
-      console.log('[MillPro DR] ✅ Request saved - Route',routeId,'by',req.requestedBy);
+      console.log('[UniPOS DR] ✅ Request saved - Route',routeId,'by',req.requestedBy);
       this.addAuditLog('dispatch_request_created',req.id,{routeId,requestedBy:req.requestedBy,role:req.requestedByRole});
       this.showToast('📤 Request sent! Awaiting approval.','amber');
     },
@@ -4441,14 +4441,14 @@ function app(){
       //   1. ONE channel (millpro_rt_*) subscribes to ALL 10 tables.
       //   2. All events route through _handleRt() → table-specific handler.
       //   3. _rtSubRegistry tracks per-table subscription state & stats.
-      //   4. window.MillProRT provides a debug console API.
+      //   4. window.UniPOSRT provides a debug console API.
       //   5. Watchdog timer detects silent disconnects every 30s.
       //   6. Exponential backoff reconnect (1s → 2s → 4s → 30s max).
       //   7. Page Visibility API triggers reconnect on tab focus.
       //   8. _syncMissedUpdates() refreshes all tables after reconnect.
       // ════════════════════════════════════════════════════════════════
 
-      console.log('[MillPro RT] Initializing centralized realtime manager...');
+      console.log('[UniPOS RT] Initializing centralized realtime manager...');
 
       // ── Initialize per-table subscription registry ──
       const _RT_TABLES=['products','warehouse_stock','customers','invoices','dispatches',
@@ -4496,7 +4496,7 @@ function app(){
         .on('postgres_changes',{event:'*',schema:'public',table:'app_users'},
             (p)=>self._handleRt('app_users',p))
         .subscribe((status,err)=>{
-          console.log('[MillPro RT] Channel status:',status, err?'ERR:'+JSON.stringify(err):'');
+          console.log('[UniPOS RT] Channel status:',status, err?'ERR:'+JSON.stringify(err):'');
 
           if(status==='SUBSCRIBED'){
             self._rtConnected=true;
@@ -4517,17 +4517,17 @@ function app(){
 
             if(_wasReconnecting){
               // Reconnect path: pull all tables to recover any missed events
-              console.log('[MillPro RT] ✅ Reconnected after',_reconnectCount,'attempt(s) - syncing missed updates...');
+              console.log('[UniPOS RT] ✅ Reconnected after',_reconnectCount,'attempt(s) - syncing missed updates...');
               self._syncMissedUpdates();
             } else {
               // Initial connect path: no sync needed, data was loaded in initAsync
-              console.log('[MillPro RT] ✅ Initial subscription active - all',Object.keys(self._rtSubRegistry).length,'tables live');
+              console.log('[UniPOS RT] ✅ Initial subscription active - all',Object.keys(self._rtSubRegistry).length,'tables live');
             }
 
             // ── Expose debug namespace ──
-            // window.MillProRT gives full visibility into the realtime engine.
-            // Usage in browser DevTools console: MillProRT.help()
-            window.MillProRT={
+            // window.UniPOSRT gives full visibility into the realtime engine.
+            // Usage in browser DevTools console: UniPOSRT.help()
+            window.UniPOSRT={
               // Connection & health
               status:()=>self._rtConnected?'🟢 LIVE ('+self.rtStatusLabel+')':'🔴 '+self.rtStatusLabel,
               channel:()=>window._mpRtCh?.state||'no channel',
@@ -4540,13 +4540,13 @@ function app(){
               // Notification history
               notifs:()=>self._notifHistory.slice(0,10),
               // Actions
-              forceSync:()=>{ console.log('[MillPro RT] Manual sync triggered'); return self._syncMissedUpdates(); },
-              reconnect:()=>{ console.log('[MillPro RT] Manual reconnect triggered'); self.setupRealtime(); },
-              debug:(on=true)=>{ self._rtVerbose=on; console.log('[MillPro RT] Verbose logging',on?'✅ ON':'OFF'); },
+              forceSync:()=>{ console.log('[UniPOS RT] Manual sync triggered'); return self._syncMissedUpdates(); },
+              reconnect:()=>{ console.log('[UniPOS RT] Manual reconnect triggered'); self.setupRealtime(); },
+              debug:(on=true)=>{ self._rtVerbose=on; console.log('[UniPOS RT] Verbose logging',on?'✅ ON':'OFF'); },
               // Full help
               help:()=>{
                 console.log([
-                  '╔═══════ MillProRT Debug Console ═══════╗',
+                  '╔═══════ UniPOSRT Debug Console ═══════╗',
                   '  .status()      - connection status',
                   '  .channel()     - raw Supabase channel state',
                   '  .events()      - total event count',
@@ -4562,13 +4562,13 @@ function app(){
                 ].join('\n'));
               },
             };
-            console.log('[MillPro RT] 🛠️  Debug namespace: window.MillProRT - type MillProRT.help()');
+            console.log('[UniPOS RT] 🛠️  Debug namespace: window.UniPOSRT - type UniPOSRT.help()');
 
             // Start watchdog to detect future silent disconnects
             self._startRtWatchdog();
 
           } else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){
-            console.warn('[MillPro RT] ⚠️  Connection lost:',status);
+            console.warn('[UniPOS RT] ⚠️  Connection lost:',status);
             self._rtConnected=false;
             self.rtStatusLabel='Offline';
             // Mark all tables as unsubscribed
@@ -4596,7 +4596,7 @@ function app(){
       });
 
       if(window._mpRtCh){
-        try{ sb.removeChannel(window._mpRtCh); }catch(e){ console.warn('[MillPro RT] Channel remove error:',e); }
+        try{ sb.removeChannel(window._mpRtCh); }catch(e){ console.warn('[UniPOS RT] Channel remove error:',e); }
         window._mpRtCh=null;
       }
       if(this._rtReconnectTimer){ clearTimeout(this._rtReconnectTimer); this._rtReconnectTimer=null; }
@@ -4607,9 +4607,9 @@ function app(){
       this._rtReconnectAttempts=0;
 
       // Nullify debug namespace on logout (security: prevents post-logout API access)
-      if(window.MillProRT) window.MillProRT=null;
+      if(window.UniPOSRT) window.UniPOSRT=null;
 
-      console.log('[MillPro RT] Teardown complete');
+      console.log('[UniPOS RT] Teardown complete');
     },
 
     // ── Watchdog: detects silent channel deaths (no status event fired) ─────
@@ -4627,7 +4627,7 @@ function app(){
         const state=ch?.state||ch?._state||'unknown';
         const isHealthy=(state==='joined'||state==='subscribing');
         if(!isHealthy&&self._rtConnected){
-          console.warn('[MillPro RT Watchdog] Channel state:',state,'- triggering reconnect');
+          console.warn('[UniPOS RT Watchdog] Channel state:',state,'- triggering reconnect');
           self._rtConnected=false;
           self.rtStatusLabel='Offline';
           self._scheduleReconnect();
@@ -4655,7 +4655,7 @@ function app(){
         device: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'📱 Mobile':'🖥️ Desktop',
         joinedAt: new Date().toISOString(),
       };
-      console.log('[MillPro Presence] Joining as',myInfo.name,'('+myInfo.role+')');
+      console.log('[UniPOS Presence] Joining as',myInfo.name,'('+myInfo.role+')');
 
       // IMPORTANT: presence channel stored OUTSIDE Alpine proxy (same reason as RT channel)
       window._mpPresenceCh=sb.channel('millpro_presence',{
@@ -4678,12 +4678,12 @@ function app(){
         });
         self.onlineUsers=allUsers;
         self.presenceLastSync=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-        console.log('[MillPro Presence] Sync:',allUsers.map(u=>u.name+'('+u.role+')').join(', '));
+        console.log('[UniPOS Presence] Sync:',allUsers.map(u=>u.name+'('+u.role+')').join(', '));
       })
       .on('presence',{event:'join'},({key,newPresences})=>{
         const u=newPresences&&newPresences[0];
         if(u&&u.email!==self.currentUser?.email){
-          console.log('[MillPro Presence] Joined:',u.name);
+          console.log('[UniPOS Presence] Joined:',u.name);
           if(['Owner','Super Admin'].includes(self.currentUser?.role))
             self._queueToast('👤 '+u.name+' came online','teal');
         }
@@ -4691,18 +4691,18 @@ function app(){
       .on('presence',{event:'leave'},({key,leftPresences})=>{
         const u=leftPresences&&leftPresences[0];
         if(u&&u.email!==self.currentUser?.email){
-          console.log('[MillPro Presence] Left:',u.name);
+          console.log('[UniPOS Presence] Left:',u.name);
           if(['Owner','Super Admin'].includes(self.currentUser?.role))
             self._queueToast('👤 '+u.name+' went offline','amber');
         }
       })
       .subscribe(async(status)=>{
-        console.log('[MillPro Presence] Status:',status);
+        console.log('[UniPOS Presence] Status:',status);
         if(status==='SUBSCRIBED'){
           // Announce our presence to all others
           const {error}=await window._mpPresenceCh.track(myInfo);
-          if(error) console.warn('[MillPro Presence] Track error:',error);
-          else console.log('[MillPro Presence] Tracking active');
+          if(error) console.warn('[UniPOS Presence] Track error:',error);
+          else console.log('[UniPOS Presence] Tracking active');
         }
       });
     },
@@ -4741,14 +4741,14 @@ function app(){
       // Delay: 1s, 2s, 4s, 8s, 16s, 30s (capped). Covers both brief blips
       // (retry fast) and prolonged outages (retry slowly to reduce load).
       const delay=Math.min(1000*Math.pow(2,this._rtReconnectAttempts-1),30000);
-      console.log('[MillPro RT] 🔁 Reconnect in',delay+'ms','(attempt #'+this._rtReconnectAttempts+')');
+      console.log('[UniPOS RT] 🔁 Reconnect in',delay+'ms','(attempt #'+this._rtReconnectAttempts+')');
       this._rtReconnectTimer=setTimeout(()=>{
         this._rtReconnectTimer=null;
         if(this.loggedIn){
-          console.log('[MillPro RT] Executing reconnect attempt #'+this._rtReconnectAttempts);
+          console.log('[UniPOS RT] Executing reconnect attempt #'+this._rtReconnectAttempts);
           this.setupRealtime();
         } else {
-          console.log('[MillPro RT] Reconnect cancelled - user logged out');
+          console.log('[UniPOS RT] Reconnect cancelled - user logged out');
         }
       },delay);
     },
@@ -4766,7 +4766,7 @@ function app(){
       // we catch the error and fall back to showing a warning toast without
       // crashing the rest of the app.
       // ════════════════════════════════════════════════════════════════
-      console.log('[MillPro RT] 🔄 Syncing ALL tables after reconnect...');
+      console.log('[UniPOS RT] 🔄 Syncing ALL tables after reconnect...');
       try{
         // Parallel fetch of all 10 tables (fastest possible recovery)
         const [pr,ws,cu,inv,di,ch,re,pa,dr,au]=await Promise.all([
@@ -4794,22 +4794,22 @@ function app(){
         // (dispatch status may have changed during the disconnect window)
         if(this.dispatchRoutes.length>0){
           this.$nextTick(()=>this.initDispatch());
-          console.log('[MillPro RT] 🔄 dispatchRoutes state refreshed after reconnect');
+          console.log('[UniPOS RT] 🔄 dispatchRoutes state refreshed after reconnect');
         }
 
         const pending=this.pendingDispatchRequestsCount;
-        console.log('[MillPro RT] ✅ Sync complete -',
+        console.log('[UniPOS RT] ✅ Sync complete -',
           'dispatches pending:',pending,
           '| products:',pr.length,'| invoices:',inv.length);
 
         this._queueToast('🔄 Reconnected - all data refreshed','blue');
       }catch(e){
-        console.error('[MillPro RT] ❌ Sync failed:',e);
+        console.error('[UniPOS RT] ❌ Sync failed:',e);
         // Partial fallback: try to at least refresh dispatch_requests
         // so the notification badges stay accurate
         try{
           this.dispatchRequests=await this.sbLoad('dispatch_requests');
-          console.warn('[MillPro RT] Partial recovery: dispatch_requests refreshed');
+          console.warn('[UniPOS RT] Partial recovery: dispatch_requests refreshed');
         }catch(e2){}
         this._queueToast('⚠️ Reconnected but sync failed - refresh page if data looks stale','amber');
       }
@@ -4843,13 +4843,13 @@ function app(){
       if(itemId){
         const ownKey=table+':'+itemId+(evt==='DELETE'?':del':'');
         if(ownKey in this._pendingLocalIds){
-          this._rtVerbose&&console.log('[MillPro RT] Dedup-OWN skip:',ownKey);
+          this._rtVerbose&&console.log('[UniPOS RT] Dedup-OWN skip:',ownKey);
           delete this._pendingLocalIds[ownKey];
           return;
         }
       }
 
-      if(!itemId){ console.warn('[MillPro RT] ⚠️ Event with no id:',table,evt,payload); return; }
+      if(!itemId){ console.warn('[UniPOS RT] ⚠️ Event with no id:',table,evt,payload); return; }
       if(!item) item={id:itemId}; // minimal fallback for bare DELETE
 
       // ── DEDUP LAYER 2: DUPLICATE EVENT ───────────────────────────
@@ -4860,7 +4860,7 @@ function app(){
       const lastSeen=this._rtEventSeenIds[seenKey]||0;
       const now=Date.now();
       if(now-lastSeen<600){
-        this._rtVerbose&&console.log('[MillPro RT] Dedup-EVT skip:',seenKey,'('+(now-lastSeen)+'ms ago)');
+        this._rtVerbose&&console.log('[UniPOS RT] Dedup-EVT skip:',seenKey,'('+(now-lastSeen)+'ms ago)');
         return;
       }
       this._rtEventSeenIds[seenKey]=now;
@@ -4874,10 +4874,10 @@ function app(){
 
       // ── VERBOSE / STANDARD LOGGING ───────────────────────────────
       if(this._rtVerbose){
-        console.log('[MillPro RT] #'+this._rtEventCount,evt,table,'id:'+itemId,
+        console.log('[UniPOS RT] #'+this._rtEventCount,evt,table,'id:'+itemId,
           '| payload:', JSON.parse(JSON.stringify(payload)));
       } else {
-        console.log('[MillPro RT]',evt,table,itemId);
+        console.log('[UniPOS RT]',evt,table,itemId);
       }
 
       // ── ROUTE TO TABLE HANDLER ───────────────────────────────────
@@ -4912,9 +4912,9 @@ function app(){
         const i=arr.findIndex(x=>x.id===item.id);
         if(i>=0){
           arr.splice(i,1);
-          this._rtVerbose&&console.log('[MillPro RT] _rtMerge DELETE idx:'+i,'id:'+item.id);
+          this._rtVerbose&&console.log('[UniPOS RT] _rtMerge DELETE idx:'+i,'id:'+item.id);
         } else {
-          this._rtVerbose&&console.log('[MillPro RT] _rtMerge DELETE not found (id:'+item.id+') - may have been removed already');
+          this._rtVerbose&&console.log('[UniPOS RT] _rtMerge DELETE not found (id:'+item.id+') - may have been removed already');
         }
         return 'deleted';
       }
@@ -4930,7 +4930,7 @@ function app(){
         const inTs=item.updatedAt||item.approvedAt||item.rejectedAt||item.requestedAt||'';
         const curTs=current.updatedAt||current.approvedAt||current.rejectedAt||current.requestedAt||'';
         if(inTs&&curTs&&inTs<curTs){
-          this._rtVerbose&&console.log('[MillPro RT] Stale UPDATE skipped id:'+item.id,'incoming:',inTs,'current:',curTs);
+          this._rtVerbose&&console.log('[UniPOS RT] Stale UPDATE skipped id:'+item.id,'incoming:',inTs,'current:',curTs);
           return 'stale';
         }
         arr.splice(i,1,item); // reactive replacement
@@ -5030,7 +5030,7 @@ function app(){
             delete dr.approvedAt; delete dr.approvedBy;
             delete dr.arrivedAt;  delete dr.arrivedBy; delete dr.arrivedByRole;
           }
-          this._rtVerbose&&console.log('[MillPro RT] dispatchRoute status:',item.routeId,'->',item.status);
+          this._rtVerbose&&console.log('[UniPOS RT] dispatchRoute status:',item.routeId,'->',item.status);
         }
       }
     },
@@ -5064,7 +5064,7 @@ function app(){
       const prev=this.dispatchRequests.find(r=>r.id===item.id);
       const result=this._rtMerge(this.dispatchRequests,item,evt);
 
-      console.log('[MillPro RT] dispatch_requests',evt,'→',result,
+      console.log('[UniPOS RT] dispatch_requests',evt,'→',result,
         '| status:',item.status,'| route:',item.routeId,'| role:',role);
 
       if(result==='inserted'){
@@ -5075,12 +5075,12 @@ function app(){
         if(['Owner','Super Admin','Warehouse','Accountant'].includes(role)){
           this._queueToast('📋 New Dispatch Request from Route '+item.routeId+
             ' ('+item.requestedByRole+')','amber');
-          console.log('[MillPro RT] 🔔 Pending dispatch requests:',this.pendingDispatchRequestsCount);
+          console.log('[UniPOS RT] 🔔 Pending dispatch requests:',this.pendingDispatchRequestsCount);
           // If approver is currently VIEWING the dispatch_requests page,
           // make sure filter shows pending items (not stuck on 'approved' tab)
           if(this.page==='dispatch_requests' && this.drFilter!=='all'){
             this.drFilter='pending_approval';
-            console.log('[MillPro RT] 🔁 drFilter reset to pending_approval (was on page during INSERT)');
+            console.log('[UniPOS RT] 🔁 drFilter reset to pending_approval (was on page during INSERT)');
           }
         }
 
@@ -5194,10 +5194,10 @@ function app(){
         email:this.currentUser?.email||'',
         ts:new Date().toISOString(),
       };
-      console.log('[MillPro Audit]',action,'|',recordId,'|',JSON.stringify(details));
+      console.log('[UniPOS Audit]',action,'|',recordId,'|',JSON.stringify(details));
       // Attempt to persist to audit_log table (silently ignored if table absent)
       sb.from('audit_log').insert({id:entry.id,data:entry})
-        .then(({error})=>{ if(error) this._rtVerbose&&console.log('[MillPro Audit] Table missing or error:',error.message); })
+        .then(({error})=>{ if(error) this._rtVerbose&&console.log('[UniPOS Audit] Table missing or error:',error.message); })
         .catch(()=>{});
     },
 
@@ -5242,7 +5242,7 @@ function app(){
       if(this._rtDebounceTimers[key]) clearTimeout(this._rtDebounceTimers[key]);
       this._rtDebounceTimers[key]=setTimeout(()=>{
         delete this._rtDebounceTimers[key];
-        try{ fn(); }catch(e){ console.warn('[MillPro RT] Debounced refresh error:',key,e); }
+        try{ fn(); }catch(e){ console.warn('[UniPOS RT] Debounced refresh error:',key,e); }
       },delay||200);
     },
 
@@ -5257,13 +5257,13 @@ function app(){
         cheques:'cheques',returns:'returns',payments:'payments',app_users:'users'
       };
       const prop=tableMap[table];
-      if(!prop){ console.warn('[MillPro RT] _fallbackRefresh: unknown table',table); return; }
+      if(!prop){ console.warn('[UniPOS RT] _fallbackRefresh: unknown table',table); return; }
       try{
-        console.log('[MillPro RT] Silent fallback refresh:',table,'→',prop);
+        console.log('[UniPOS RT] Silent fallback refresh:',table,'→',prop);
         const fresh=await this.sbLoad(table);
         if(fresh&&fresh.length>=0) this[prop]=fresh;
-        this._rtVerbose&&console.log('[MillPro RT] Fallback complete:',table,fresh.length,'records');
-      }catch(e){ console.warn('[MillPro RT] Fallback refresh error:',table,e); }
+        this._rtVerbose&&console.log('[UniPOS RT] Fallback complete:',table,fresh.length,'records');
+      }catch(e){ console.warn('[UniPOS RT] Fallback refresh error:',table,e); }
     },
 
     // ── Prune event dedup cache ───────────────────────────────────────────
@@ -5284,7 +5284,7 @@ function app(){
           .forEach(k=>delete this._rtEventSeenIds[k]);
         removed+=100;
       }
-      this._rtVerbose&&console.log('[MillPro RT] Pruned',removed,'event dedup entries');
+      this._rtVerbose&&console.log('[UniPOS RT] Pruned',removed,'event dedup entries');
     },
 
     openChequeModal(ch=null){
@@ -5552,7 +5552,7 @@ function app(){
     // ══════════════════════════════════════════════════════════════
     // v28: Print / PDF for Daily Sales page
     printDailySales(){
-      const biz=this.settings.businessName||'MillPro ERP';
+      const biz=this.settings.businessName||'UniPOS ERP';
       const rows=this.dailySalesRows;
       const summary=this.dsSummary;
       const filterDesc=[
@@ -5620,7 +5620,7 @@ function app(){
     printTableWin(title,subtitle,headers,rows){
       const th=headers.map(h=>`<th>${h}</th>`).join('');
       const tb=rows.map(r=>`<tr>${r.map(d=>`<td>${d===null||d===undefined?'-':d}</td>`).join('')}</tr>`).join('');
-      const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${title}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11px;padding:20px;color:#111}.header{margin-bottom:12px}h2{font-size:18px;font-weight:700;margin-bottom:3px}.sub{color:#555;font-size:11px}table{width:100%;border-collapse:collapse;margin-top:10px}th{background:#f3f4f6;border:1px solid #d1d5db;padding:7px 9px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;color:#374151}td{border:1px solid #e5e7eb;padding:6px 9px;font-size:11px;color:#111}tr:nth-child(even) td{background:#f9fafb}.footer{margin-top:12px;font-size:10px;color:#999}@media print{@page{size:A4 landscape;margin:15mm}button{display:none}}</style></head><body><div class="header"><h2>MillPro ERP - ${title}</h2><div class="sub">${subtitle} | Printed: ${new Date().toLocaleString('en-GB')}</div></div><table><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table><div class="footer">MillPro ERP - ${rows.length} records</div><br/><button onclick="window.print()" style="padding:8px 20px;background:#4338ca;color:white;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600">🖨️ Print / Save as PDF</button></body></html>`;
+      const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${title}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11px;padding:20px;color:#111}.header{margin-bottom:12px}h2{font-size:18px;font-weight:700;margin-bottom:3px}.sub{color:#555;font-size:11px}table{width:100%;border-collapse:collapse;margin-top:10px}th{background:#f3f4f6;border:1px solid #d1d5db;padding:7px 9px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;color:#374151}td{border:1px solid #e5e7eb;padding:6px 9px;font-size:11px;color:#111}tr:nth-child(even) td{background:#f9fafb}.footer{margin-top:12px;font-size:10px;color:#999}@media print{@page{size:A4 landscape;margin:15mm}button{display:none}}</style></head><body><div class="header"><h2>UniPOS ERP - ${title}</h2><div class="sub">${subtitle} | Printed: ${new Date().toLocaleString('en-GB')}</div></div><table><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table><div class="footer">UniPOS ERP - ${rows.length} records</div><br/><button onclick="window.print()" style="padding:8px 20px;background:#4338ca;color:white;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600">🖨️ Print / Save as PDF</button></body></html>`;
       const w=window.open('','_blank','width=960,height=680');w.document.write(html);w.document.close();
     },
     exportTableExcel(title,headers,rows,filename){
@@ -5632,34 +5632,34 @@ function app(){
     },
     _productRows(){return this.filteredProducts.map(p=>[p.name+' '+p.variant,p.sku,p.category,this.getStock(p.id)+' '+p.unit,p.costPrice,p.sellingPrice,this.getStock(p.id)<p.minStock?'Low Stock':'In Stock'])},
     _productHdrs(){return['Product','SKU','Category','Stock','Cost Price (Rs.)','Sell Price (Rs.)','Status']},
-    printProducts(){this.printTableWin('Products & SKUs',this.settings.businessName||'MillPro ERP',this._productHdrs(),this._productRows())},
+    printProducts(){this.printTableWin('Products & SKUs',this.settings.businessName||'UniPOS ERP',this._productHdrs(),this._productRows())},
     exportProductsCSV(){this.dlCSV([this._productHdrs(),...this._productRows()],'products')},
     exportProductsExcel(){this.exportTableExcel('Products & SKUs',this._productHdrs(),this._productRows(),'products')},
-    exportProductsPDF(){this.printTableWin('Products & SKUs',this.settings.businessName||'MillPro ERP',this._productHdrs(),this._productRows())},
+    exportProductsPDF(){this.printTableWin('Products & SKUs',this.settings.businessName||'UniPOS ERP',this._productHdrs(),this._productRows())},
     _debtRows(){return this.debtorList.map(d=>[d.shopName,d.phone||'-','Route '+d.routeId,'Rs. '+Math.round(d.outstanding).toLocaleString(),'Rs. '+Math.round(d.creditLimit).toLocaleString(),Math.round(d.outstanding/d.creditLimit*100)+'%',d.lastPayDate])},
     _debtHdrs(){return['Shop','Phone','Route','Outstanding','Credit Limit','Usage %','Last Payment']},
-    printDebts(){this.printTableWin('Debt Ledger',this.settings.businessName||'MillPro ERP',this._debtHdrs(),this._debtRows())},
+    printDebts(){this.printTableWin('Debt Ledger',this.settings.businessName||'UniPOS ERP',this._debtHdrs(),this._debtRows())},
     exportDebtsCSV(){this.dlCSV([this._debtHdrs(),...this._debtRows()],'debts')},
     exportDebtsExcel(){this.exportTableExcel('Debt Ledger',this._debtHdrs(),this._debtRows(),'debts')},
-    exportDebtsPDF(){this.printTableWin('Debt Ledger',this.settings.businessName||'MillPro ERP',this._debtHdrs(),this._debtRows())},
+    exportDebtsPDF(){this.printTableWin('Debt Ledger',this.settings.businessName||'UniPOS ERP',this._debtHdrs(),this._debtRows())},
     _chequeRows(){return this.filteredCheques.map(ch=>[ch.number,this.getCustomer(ch.customerId)?.shopName||'-',ch.bank||'-','Rs. '+Math.round(ch.amount||0).toLocaleString(),ch.chequeDate||'-',ch.depositDate||'-',ch.clearanceDate||'-',ch.status.toUpperCase(),ch.bounceReason||'-'])},
     _chequeHdrs(){return['Cheque #','Customer','Bank','Amount','Cheque Date','Deposit Date','Clearance Date','Status','Bounce Reason']},
-    printCheques(){this.printTableWin('Cheque Management',this.settings.businessName||'MillPro ERP',this._chequeHdrs(),this._chequeRows())},
+    printCheques(){this.printTableWin('Cheque Management',this.settings.businessName||'UniPOS ERP',this._chequeHdrs(),this._chequeRows())},
     exportChequesCSV(){this.dlCSV([this._chequeHdrs(),...this._chequeRows()],'cheques')},
     exportChequesExcel(){this.exportTableExcel('Cheques',this._chequeHdrs(),this._chequeRows(),'cheques')},
-    exportChequesPDF(){this.printTableWin('Cheque Management',this.settings.businessName||'MillPro ERP',this._chequeHdrs(),this._chequeRows())},
+    exportChequesPDF(){this.printTableWin('Cheque Management',this.settings.businessName||'UniPOS ERP',this._chequeHdrs(),this._chequeRows())},
     _returnRows(){return this.returns.slice().reverse().map(r=>[r.number,r.date,this.getCustomer(r.customerId)?.shopName||'-','Route '+r.routeId,r.items.length+' item(s)',r.items.map(i=>i.qty+'× '+i.name+' ('+i.reason+')').join('; '),'Rs. '+Math.round(r.total).toLocaleString(),r.notes||'-'])},
     _returnHdrs(){return['Return #','Date','Customer','Route','Count','Items','Value','Notes']},
-    printReturns(){this.printTableWin('Returns Management',this.settings.businessName||'MillPro ERP',this._returnHdrs(),this._returnRows())},
+    printReturns(){this.printTableWin('Returns Management',this.settings.businessName||'UniPOS ERP',this._returnHdrs(),this._returnRows())},
     exportReturnsCSV(){this.dlCSV([this._returnHdrs(),...this._returnRows()],'returns')},
     exportReturnsExcel(){this.exportTableExcel('Returns',this._returnHdrs(),this._returnRows(),'returns')},
-    exportReturnsPDF(){this.printTableWin('Returns Management',this.settings.businessName||'MillPro ERP',this._returnHdrs(),this._returnRows())},
+    exportReturnsPDF(){this.printTableWin('Returns Management',this.settings.businessName||'UniPOS ERP',this._returnHdrs(),this._returnRows())},
     _paymentRows(){return this.payments.slice().reverse().map(p=>[p.date,this.getCustomer(p.customerId)?.shopName||'-',p.invoiceId?(this.invoices.find(i=>i.id===p.invoiceId)?.number||'-'):'-','Rs. '+Math.round(p.amount||0).toLocaleString(),p.payType||'-',p.by||'-',p.ref||'-'])},
     _paymentHdrs(){return['Date','Customer','Invoice Ref','Amount','Method','Collected By','Reference']},
-    printPayments(){this.printTableWin('Payment Transactions',this.settings.businessName||'MillPro ERP',this._paymentHdrs(),this._paymentRows())},
+    printPayments(){this.printTableWin('Payment Transactions',this.settings.businessName||'UniPOS ERP',this._paymentHdrs(),this._paymentRows())},
     exportPaymentsCSV(){this.dlCSV([this._paymentHdrs(),...this._paymentRows()],'payments')},
     exportPaymentsExcel(){this.exportTableExcel('Payments',this._paymentHdrs(),this._paymentRows(),'payments')},
-    exportPaymentsPDF(){this.printTableWin('Payment Transactions',this.settings.businessName||'MillPro ERP',this._paymentHdrs(),this._paymentRows())},
+    exportPaymentsPDF(){this.printTableWin('Payment Transactions',this.settings.businessName||'UniPOS ERP',this._paymentHdrs(),this._paymentRows())},
 
     copySqlSetup(){
       const el=document.getElementById('sqlSetupCode');
@@ -5739,7 +5739,7 @@ function app(){
         this.showToast('🔄 Dispatch statuses reset for all routes!','green');
         this.addAuditLog('dispatch_manual_reset','all',{by:byName,role:byRole,date:this.todayISO});
       } else {
-        console.log('[MillPro Reset] Automatic dispatch reset for',this.todayISO);
+        console.log('[UniPOS Reset] Automatic dispatch reset for',this.todayISO);
         this.addAuditLog('dispatch_auto_reset','all',{date:this.todayISO});
       }
     },
